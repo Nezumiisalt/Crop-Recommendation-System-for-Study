@@ -74,7 +74,7 @@ def ensemble_predict(rf_model, xgb_model, sample, le, w_rf=0.4, w_xgb=0.6):
 st.set_page_config(page_title="Crop Recommendation", layout="centered")
 
 st.title("🌱 Crop Recommendation")
-st.caption("เลือกค่าดิน")
+st.caption("Adjust soil parameters")
 
 # INPUT
 N = st.slider("Nitrogen (N)", 0, 140, 50)
@@ -112,7 +112,7 @@ if st.button("Predict"):
             """
             <div style="margin-top:20px; margin-bottom:10px;">
                 <h2 style="font-size:32px; font-weight:700;">
-                     แนะนำให้ปลูก
+                     recommend
                 </h2>
             </div>
             """,
@@ -135,7 +135,7 @@ if st.button("Predict"):
             """
             <div style="margin-top:25px; margin-bottom:10px;">
                 <h3 style="font-size:24px; font-weight:600;">
-                     ตัวเลือกอื่น
+                     Other choice
                 </h3>
             </div>
             """,
