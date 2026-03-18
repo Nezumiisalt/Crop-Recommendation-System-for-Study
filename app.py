@@ -74,7 +74,7 @@ def ensemble_predict(rf_model, xgb_model, sample, le, w_rf=0.4, w_xgb=0.6):
 st.set_page_config(page_title="Crop Recommendation", layout="centered")
 
 st.markdown(
-    "<h1 style='font-size:30px;'>Crop Recommendation 🌱</h1>",
+    "<h1 style='font-size:40px;'>Crop Recommendation 🌱</h1>",
     unsafe_allow_html=True
 )
 st.caption("Adjust soil parameters")
