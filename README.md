@@ -7,6 +7,26 @@ Features
 - Top 3 crop recommendations
 - Interactive Streamlit UI
 
-How to run
-```bash
-streamlit run app.py
+Dataset
+
+This project uses the Crop Recommendation Dataset, which contains environmental and soil parameters:
+
+Nitrogen (N)
+
+Phosphorus (P)
+
+Potassium (K)
+
+Temperature
+
+Humidity
+
+pH value
+
+Rainfall
+
+Dataset provided by:
+
+Kaggle: Crop Recommendation Dataset
+
+Source: https://www.kaggle.com/datasets/atharvaingle/crop-recommendation-dataset
