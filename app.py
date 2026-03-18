@@ -73,7 +73,7 @@ def ensemble_predict(rf_model, xgb_model, sample, le, w_rf=0.4, w_xgb=0.6):
 # UI
 st.set_page_config(page_title="Crop Recommendation", layout="centered")
 
-st.title("🌱 Crop Recommendation")
+st.title("Crop Recommendation 🌱")
 st.caption("Adjust soil parameters")
 
 # INPUT
