@@ -18,13 +18,14 @@ import joblib
 st.markdown("""
 <style>
 
-/* ================= LIGHT MODE ================= */
+html, body, [class*="css"]  {
+    background-color: #f5f6e5 !important;
+}
 
-/* 🔥 บังคับทุก layer */
+/* ================= LIGHT MODE ================= */
+[data-theme="light"] html,
 [data-theme="light"] body,
-[data-theme="light"] .stApp,
-[data-theme="light"] .main,
-[data-theme="light"] .block-container {
+[data-theme="light"] .stApp {
     background-color: #f5f6e5 !important;
 }
 
@@ -37,8 +38,7 @@ st.markdown("""
 /* Text */
 [data-theme="light"] label,
 [data-theme="light"] p,
-[data-theme="light"] span,
-[data-theme="light"] div {
+[data-theme="light"] span {
     color: #000000 !important;
 }
 
@@ -51,14 +51,20 @@ st.markdown("""
 [data-theme="light"] .stButton button {
     background-color: #759b69;
     color: white;
+    border-radius: 10px;
 }
 
-/* ================= DARK MODE ================= */
+/* Chart */
+[data-theme="light"] .stPlotlyChart,
+[data-theme="light"] .stBarChart {
+    background-color: #f5f6e5 !important;
+}
 
+
+/* ================= DARK MODE ================= */
+[data-theme="dark"] html,
 [data-theme="dark"] body,
-[data-theme="dark"] .stApp,
-[data-theme="dark"] .main,
-[data-theme="dark"] .block-container {
+[data-theme="dark"] .stApp {
     background-color: #0e1117 !important;
 }
 
@@ -70,8 +76,7 @@ st.markdown("""
 /* Text */
 [data-theme="dark"] label,
 [data-theme="dark"] p,
-[data-theme="dark"] span,
-[data-theme="dark"] div {
+[data-theme="dark"] span {
     color: #ffffff !important;
 }
 
@@ -85,6 +90,13 @@ st.markdown("""
     background-color: #4CAF50;
     color: white;
 }
+
+/* Chart */
+[data-theme="dark"] .stPlotlyChart,
+[data-theme="dark"] .stBarChart {
+    background-color: #0e1117 !important;
+}
+
 
 /* Remove anchor */
 h1 a, h2 a, h3 a, h4 a {
@@ -208,7 +220,7 @@ if st.button("Predict"):
             unsafe_allow_html=True
         )
 
-        st.markdown("<h3>Other choice</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:black;'>Other choice</h3>", unsafe_allow_html=True)
 
         for crop, percent in top3:
             st.markdown(
