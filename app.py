@@ -12,9 +12,7 @@ import pandas as pd
 import numpy as np
 import joblib
 
-# =======================
-# 🎨 THEME FIX (LIGHT + DARK)
-# =======================
+#THEME FIX
 st.markdown("""
 <style>
 
@@ -22,7 +20,6 @@ html, body, [class*="css"]  {
     background-color: #f5f6e5 !important;
 }
 
-/* ================= LIGHT MODE ================= */
 [data-theme="light"] html,
 [data-theme="light"] body,
 [data-theme="light"] .stApp {
@@ -61,7 +58,6 @@ html, body, [class*="css"]  {
 }
 
 
-/* ================= DARK MODE ================= */
 [data-theme="dark"] html,
 [data-theme="dark"] body,
 [data-theme="dark"] .stApp {
@@ -107,18 +103,14 @@ h1 a, h2 a, h3 a, h4 a {
 """, unsafe_allow_html=True)
 
 
-# =======================
 # LOAD MODEL
-# =======================
 rf_model = joblib.load("rf_model.pkl")
 xgb_model = joblib.load("xgb_model.pkl")
 scaler = joblib.load("scaler.pkl")
 le = joblib.load("label_encoder.pkl")
 
 
-# =======================
 # VALIDATION
-# =======================
 def validate_input(data):
     rules = {
         "N": (0, 140),
@@ -137,17 +129,13 @@ def validate_input(data):
     return True, "OK"
 
 
-# =======================
 # PREPARE INPUT
-# =======================
 def prepare_input(user_dict):
     df = pd.DataFrame([user_dict])
     return scaler.transform(df)
 
 
-# =======================
 # ENSEMBLE
-# =======================
 def ensemble_predict(rf_model, xgb_model, sample, le, w_rf=0.4, w_xgb=0.6):
     rf_probs = rf_model.predict_proba(sample)[0]
     xgb_probs = xgb_model.predict_proba(sample)[0]
@@ -167,9 +155,7 @@ def ensemble_predict(rf_model, xgb_model, sample, le, w_rf=0.4, w_xgb=0.6):
     return best_crop, results
 
 
-# =======================
 # UI
-# =======================
 st.set_page_config(page_title="Crop Recommendation", layout="centered")
 
 st.markdown("<h1>🌱 Crop Recommendation</h1>", unsafe_allow_html=True)
@@ -195,9 +181,7 @@ user_input = {
 }
 
 
-# =======================
 # BUTTON
-# =======================
 if st.button("Predict"):
 
     valid, msg = validate_input(user_input)
