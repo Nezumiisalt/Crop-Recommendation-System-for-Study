@@ -13,55 +13,89 @@ import numpy as np
 import joblib
 
 # =======================
-# 🎨 CUSTOM CSS (LIGHT MODE)
+# 🎨 DETECT THEME
 # =======================
-st.markdown("""
-<style>
+theme = st.get_option("theme.base")  # "light" หรือ "dark"
 
-/* 🌱 Background */
-body, .stApp {
-    background-color: #f5f6e5;
-}
+# =======================
+# 🎨 LIGHT MODE
+# =======================
+if theme == "light":
+    st.markdown("""
+    <style>
+    body, .stApp {
+        background-color: #f5f6e5;
+    }
 
-/* 🌱 Title */
-h1 {
-    color: #759b69;
-}
+    h1 {
+        color: #759b69;
+        font-family: 'Puimek', sans-serif;
+    }
 
-/* 🌱 Label text (input) */
-label, .stMarkdown, .stText {
-    color: #000000 !important;
-}
+    label, .stMarkdown, .stText {
+        color: #000000 !important;
+    }
 
-/* 🌱 Slider color */
-.stSlider > div > div > div > div {
-    background-color: #759b69 !important;
-}
+    .stSlider > div > div > div > div {
+        background-color: #759b69 !important;
+    }
 
-/* 🌱 Slider number */
-.stSlider span {
-    color: #000000 !important;
-}
+    .stSlider span {
+        color: #000000 !important;
+    }
 
-/* 🌱 Button */
-.stButton button {
-    background-color: #759b69;
-    color: white;
-    border-radius: 10px;
-}
+    .stButton button {
+        background-color: #759b69;
+        color: white;
+        border-radius: 10px;
+    }
 
-/* 🌱 Chart background */
-.css-1r6slb0, .stPlotlyChart, .stBarChart {
-    background-color: #f5f6e5 !important;
-}
+    .stPlotlyChart, .stBarChart {
+        background-color: #f5f6e5 !important;
+    }
 
-/* 🌱 Remove anchor */
-h1 a, h2 a, h3 a, h4 a {
-    display: none !important;
-}
+    </style>
+    """, unsafe_allow_html=True)
 
-</style>
-""", unsafe_allow_html=True)
+# =======================
+# 🌙 DARK MODE
+# =======================
+else:
+    st.markdown("""
+    <style>
+    body, .stApp {
+        background-color: #0e1117;
+    }
+
+    h1 {
+        color: #9be7a1;
+        font-family: 'Puimek', sans-serif;
+    }
+
+    label, .stMarkdown, .stText {
+        color: #ffffff !important;
+    }
+
+    .stSlider > div > div > div > div {
+        background-color: #9be7a1 !important;
+    }
+
+    .stSlider span {
+        color: #ffffff !important;
+    }
+
+    .stButton button {
+        background-color: #2e7d32;
+        color: white;
+        border-radius: 10px;
+    }
+
+    .stPlotlyChart, .stBarChart {
+        background-color: #0e1117 !important;
+    }
+
+    </style>
+    """, unsafe_allow_html=True)
 
 
 # =======================
@@ -129,12 +163,9 @@ def ensemble_predict(rf_model, xgb_model, sample, le, w_rf=0.4, w_xgb=0.6):
 # =======================
 st.set_page_config(page_title="Crop Recommendation", layout="centered")
 
-st.markdown(
-    "<h1>🌱 Crop Recommendation</h1>",
-    unsafe_allow_html=True
-)
+st.markdown("<h1>🌱 Crop Recommendation</h1>", unsafe_allow_html=True)
 
-st.markdown("<p style='color:black;'>เลือกค่าดิน</p>", unsafe_allow_html=True)
+st.markdown("เลือกค่าดิน")
 
 # INPUT
 N = st.slider("Nitrogen (N)", 0, 140, 50)
@@ -170,36 +201,46 @@ if st.button("Predict"):
 
         best_crop, top3 = ensemble_predict(rf_model, xgb_model, sample, le)
 
-        # ✅ RESULT BOX
+        # 🎯 RESULT BOX
+        if theme == "light":
+            box_color = "#b0c663"
+            text_color = "#000000"
+        else:
+            box_color = "#1b5e20"
+            text_color = "#ffffff"
+
         st.markdown(
             f"""
-            <div style="padding:20px; border-radius:15px; background-color:#b0c663; text-align:center">
-                <h1 style="color:#000000;">{best_crop[0]}</h1>
-                <h2 style="color:#000000;">{best_crop[1]:.1f}%</h2>
+            <div style="padding:20px; border-radius:15px; background-color:{box_color}; text-align:center">
+                <h1 style="color:{text_color};">{best_crop[0]}</h1>
+                <h2 style="color:{text_color};">{best_crop[1]:.1f}%</h2>
             </div>
             """,
             unsafe_allow_html=True
         )
 
-        # ✅ OTHER CHOICE TITLE
-        st.markdown(
-            "<h3 style='color:black;'>Other choice</h3>",
-            unsafe_allow_html=True
-        )
+        # 🎯 OTHER CHOICE
+        st.markdown("<h3>Other choice</h3>", unsafe_allow_html=True)
 
-        # ✅ OTHER CHOICE BOX
         for crop, percent in top3:
+            if theme == "light":
+                bg = "#759b69"
+                color = "#ffffff"
+            else:
+                bg = "#263238"
+                color = "#ffffff"
+
             st.markdown(
                 f"""
-                <div style="padding:10px; margin:5px; border-radius:10px; background-color:#759b69">
-                    <b style="font-size:20px; color:white;">{crop}</b>
-                    <span style="float:right; font-size:18px; color:white;">{percent:.1f}%</span>
+                <div style="padding:10px; margin:5px; border-radius:10px; background-color:{bg}">
+                    <b style="font-size:20px; color:{color};">{crop}</b>
+                    <span style="float:right; font-size:18px; color:{color};">{percent:.1f}%</span>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
-        # ✅ CHART
+        # 🎯 CHART
         df_chart = pd.DataFrame(top3, columns=["Crop", "Percent"])
         st.bar_chart(df_chart.set_index("Crop"))
 
