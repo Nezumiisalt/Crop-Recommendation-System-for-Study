@@ -13,16 +13,18 @@ import numpy as np
 import joblib
 
 # =======================
-# 🎨 THEME (LIGHT + DARK)
+# 🎨 THEME FIX (LIGHT + DARK)
 # =======================
 st.markdown("""
 <style>
 
 /* ================= LIGHT MODE ================= */
+
+/* 🔥 บังคับทุก layer */
 [data-theme="light"] body,
 [data-theme="light"] .stApp,
 [data-theme="light"] .main,
-[data-theme="light"] section.main {
+[data-theme="light"] .block-container {
     background-color: #f5f6e5 !important;
 }
 
@@ -35,7 +37,8 @@ st.markdown("""
 /* Text */
 [data-theme="light"] label,
 [data-theme="light"] p,
-[data-theme="light"] span {
+[data-theme="light"] span,
+[data-theme="light"] div {
     color: #000000 !important;
 }
 
@@ -50,10 +53,12 @@ st.markdown("""
     color: white;
 }
 
-
 /* ================= DARK MODE ================= */
+
 [data-theme="dark"] body,
-[data-theme="dark"] .stApp {
+[data-theme="dark"] .stApp,
+[data-theme="dark"] .main,
+[data-theme="dark"] .block-container {
     background-color: #0e1117 !important;
 }
 
@@ -65,7 +70,8 @@ st.markdown("""
 /* Text */
 [data-theme="dark"] label,
 [data-theme="dark"] p,
-[data-theme="dark"] span {
+[data-theme="dark"] span,
+[data-theme="dark"] div {
     color: #ffffff !important;
 }
 
@@ -191,14 +197,12 @@ if st.button("Predict"):
 
         best_crop, top3 = ensemble_predict(rf_model, xgb_model, sample, le)
 
-        # RESULT BOX (auto adapt)
+        # RESULT BOX
         st.markdown(
             f"""
-            <div style="padding:20px; border-radius:15px;
-                        background-color: var(--result-bg, #b0c663);
-                        text-align:center">
-                <h1>{best_crop[0]}</h1>
-                <h2>{best_crop[1]:.1f}%</h2>
+            <div style="padding:20px; border-radius:15px; background-color:#b0c663; text-align:center">
+                <h1 style="color:#000000;">{best_crop[0]}</h1>
+                <h2 style="color:#000000;">{best_crop[1]:.1f}%</h2>
             </div>
             """,
             unsafe_allow_html=True
@@ -209,10 +213,9 @@ if st.button("Predict"):
         for crop, percent in top3:
             st.markdown(
                 f"""
-                <div style="padding:10px; margin:5px; border-radius:10px;
-                            background-color:#759b69; color:white;">
-                    <b style="font-size:20px;">{crop}</b>
-                    <span style="float:right;">{percent:.1f}%</span>
+                <div style="padding:10px; margin:5px; border-radius:10px; background-color:#759b69">
+                    <b style="font-size:20px; color:white;">{crop}</b>
+                    <span style="float:right; color:white;">{percent:.1f}%</span>
                 </div>
                 """,
                 unsafe_allow_html=True
