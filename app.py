@@ -20,8 +20,10 @@ st.markdown("""
 
 /* ================= LIGHT MODE ================= */
 [data-theme="light"] body,
-[data-theme="light"] .stApp {
-    background-color: #f5f6e5;
+[data-theme="light"] .stApp,
+[data-theme="light"] .main,
+[data-theme="light"] section.main {
+    background-color: #f5f6e5 !important;
 }
 
 /* Title */
@@ -52,7 +54,7 @@ st.markdown("""
 /* ================= DARK MODE ================= */
 [data-theme="dark"] body,
 [data-theme="dark"] .stApp {
-    background-color: #0e1117;
+    background-color: #0e1117 !important;
 }
 
 /* Title */
