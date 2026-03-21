@@ -19,69 +19,66 @@ st.markdown("""
 <style>
 
 /* ================= LIGHT MODE ================= */
-@media (prefers-color-scheme: light) {
+[data-theme="light"] body,
+[data-theme="light"] .stApp {
+    background-color: #f5f6e5;
+}
 
-    body, .stApp {
-        background-color: #f5f6e5;
-    }
+/* Title */
+[data-theme="light"] h1 {
+    color: #759b69;
+    font-family: 'Puimek', sans-serif;
+}
 
-    h1 {
-        color: #759b69;
-        font-family: 'Puimek', sans-serif;
-    }
+/* Text */
+[data-theme="light"] label,
+[data-theme="light"] p,
+[data-theme="light"] span {
+    color: #000000 !important;
+}
 
-    label, .stMarkdown, .stText {
-        color: #000000 !important;
-    }
+/* Slider */
+[data-theme="light"] .stSlider > div > div > div > div {
+    background-color: #759b69 !important;
+}
 
-    .stSlider span {
-        color: #000000 !important;
-    }
-
-    .stSlider > div > div > div > div {
-        background-color: #759b69 !important;
-    }
-
-    .stButton button {
-        background-color: #759b69;
-        color: white;
-        border-radius: 10px;
-    }
+/* Button */
+[data-theme="light"] .stButton button {
+    background-color: #759b69;
+    color: white;
 }
 
 
 /* ================= DARK MODE ================= */
-@media (prefers-color-scheme: dark) {
-
-    body, .stApp {
-        background-color: #0e1117;
-    }
-
-    h1 {
-        color: #9be3a1;
-        font-family: 'Puimek', sans-serif;
-    }
-
-    label, .stMarkdown, .stText {
-        color: #ffffff !important;
-    }
-
-    .stSlider span {
-        color: #ffffff !important;
-    }
-
-    .stSlider > div > div > div > div {
-        background-color: #4caf50 !important;
-    }
-
-    .stButton button {
-        background-color: #4caf50;
-        color: black;
-        border-radius: 10px;
-    }
+[data-theme="dark"] body,
+[data-theme="dark"] .stApp {
+    background-color: #0e1117;
 }
 
-/* remove anchor */
+/* Title */
+[data-theme="dark"] h1 {
+    color: #9be7a1;
+}
+
+/* Text */
+[data-theme="dark"] label,
+[data-theme="dark"] p,
+[data-theme="dark"] span {
+    color: #ffffff !important;
+}
+
+/* Slider */
+[data-theme="dark"] .stSlider > div > div > div > div {
+    background-color: #4CAF50 !important;
+}
+
+/* Button */
+[data-theme="dark"] .stButton button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* Remove anchor */
 h1 a, h2 a, h3 a, h4 a {
     display: none !important;
 }
@@ -156,9 +153,7 @@ def ensemble_predict(rf_model, xgb_model, sample, le, w_rf=0.4, w_xgb=0.6):
 st.set_page_config(page_title="Crop Recommendation", layout="centered")
 
 st.markdown("<h1>🌱 Crop Recommendation</h1>", unsafe_allow_html=True)
-
-st.markdown("<p>เลือกค่าดิน</p>", unsafe_allow_html=True)
-
+st.markdown("เลือกค่าดิน")
 
 # INPUT
 N = st.slider("Nitrogen (N)", 0, 140, 50)
@@ -194,17 +189,14 @@ if st.button("Predict"):
 
         best_crop, top3 = ensemble_predict(rf_model, xgb_model, sample, le)
 
-        # 🔥 RESULT BOX (auto dark/light)
+        # RESULT BOX (auto adapt)
         st.markdown(
             f"""
-            <div style="
-                padding:20px;
-                border-radius:15px;
-                text-align:center;
-                background-color:#b0c663;
-            ">
-                <h1 style="color:#000000;">{best_crop[0]}</h1>
-                <h2 style="color:#000000;">{best_crop[1]:.1f}%</h2>
+            <div style="padding:20px; border-radius:15px;
+                        background-color: var(--result-bg, #b0c663);
+                        text-align:center">
+                <h1>{best_crop[0]}</h1>
+                <h2>{best_crop[1]:.1f}%</h2>
             </div>
             """,
             unsafe_allow_html=True
@@ -212,26 +204,18 @@ if st.button("Predict"):
 
         st.markdown("<h3>Other choice</h3>", unsafe_allow_html=True)
 
-        # 🔥 OTHER CHOICE
         for crop, percent in top3:
             st.markdown(
                 f"""
-                <div style="
-                    padding:10px;
-                    margin:5px;
-                    border-radius:10px;
-                    background-color:#759b69;
-                ">
-                    <b style="font-size:20px; color:white;">{crop}</b>
-                    <span style="float:right; font-size:18px; color:white;">
-                        {percent:.1f}%
-                    </span>
+                <div style="padding:10px; margin:5px; border-radius:10px;
+                            background-color:#759b69; color:white;">
+                    <b style="font-size:20px;">{crop}</b>
+                    <span style="float:right;">{percent:.1f}%</span>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
-        # 🔥 CHART
         df_chart = pd.DataFrame(top3, columns=["Crop", "Percent"])
         st.bar_chart(df_chart.set_index("Crop"))
 
