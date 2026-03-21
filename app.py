@@ -26,7 +26,6 @@ body, .stApp {
 /* 🌱 Title */
 h1 {
     color: #759b69;
-    font-family: 'Puimek', sans-serif;
 }
 
 /* 🌱 Label text (input) */
