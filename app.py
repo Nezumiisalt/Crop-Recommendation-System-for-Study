@@ -7,61 +7,61 @@ Original file is located at
     https://colab.research.google.com/drive/1RoIM22UuZHL_7cxR4IepCG6w1b5w8SC-
 """
 
+# -*- coding: utf-8 -*-
 import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
 
-#CSS
+# ================== CSS ==================
 st.markdown("""
 <style>
+
+/* ซ่อน anchor */
+h1 a, h2 a, h3 a, h4 a {
+    display: none !important;
+}
 
 /* ===== LIGHT MODE ONLY ===== */
 @media (prefers-color-scheme: light) {
 
-    /* พื้นหลัง */
+    /* พื้นหลังเว็บ */
     body, .stApp {
         background-color: #f5f6e5;
     }
 
     /* หัวข้อ */
-    h1, h2, h3, h4, h5, h6, p, label {
-        color: #000000 !important;
+    h1 {
+        color: #759b69 !important;
         font-family: 'Puimek', sans-serif;
     }
 
-    /* Slider text */
-    .stSlider label {
+    /* label + text */
+    label, .stMarkdown, .stText {
         color: #000000 !important;
     }
 
-    /* Slider bar */
+    /* slider bar */
     .stSlider > div > div {
         color: #759b69 !important;
     }
 
+    /* slider track */
     .stSlider [data-baseweb="slider"] div {
         background-color: #759b69 !important;
     }
 
-    /* ปุ่ม */
-    .stButton button {
-        background-color: #759b69;
-        color: white;
-        border-radius: 10px;
-    }
-
-    /* result box */
+    /* RESULT BOX (แนะนำให้ปลูก) */
     .result-box {
         background-color: #b0c663;
+        color: #000000;
         padding: 20px;
         border-radius: 15px;
         text-align: center;
-        color: #000000;
     }
 
-    /* other choice box */
-    .choice-box {
+    /* OTHER CHOICE BOX */
+    .other-box {
         background-color: #759b69;
         color: #ffffff;
         padding: 10px;
@@ -75,21 +75,16 @@ st.markdown("""
     }
 }
 
-/* ===== ซ่อน anchor ===== */
-h1 a, h2 a, h3 a, h4 a {
-    display: none !important;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
-#LOAD MODEL
+# ================== LOAD MODEL ==================
 rf_model = joblib.load("rf_model.pkl")
 xgb_model = joblib.load("xgb_model.pkl")
 scaler = joblib.load("scaler.pkl")
 le = joblib.load("label_encoder.pkl")
 
-#VALIDATION
+# ================== VALIDATION ==================
 def validate_input(data):
     rules = {
         "N": (0, 140),
@@ -107,18 +102,17 @@ def validate_input(data):
 
     return True, "OK"
 
-#PREPARE INPUT
+# ================== PREP ==================
 def prepare_input(user_dict):
     df = pd.DataFrame([user_dict])
     return scaler.transform(df)
 
-#ENSEMBLE
+# ================== ENSEMBLE ==================
 def ensemble_predict(rf_model, xgb_model, sample, le, w_rf=0.4, w_xgb=0.6):
     rf_probs = rf_model.predict_proba(sample)[0]
     xgb_probs = xgb_model.predict_proba(sample)[0]
 
     combined = (w_rf * rf_probs) + (w_xgb * xgb_probs)
-
     top3_idx = combined.argsort()[-3:][::-1]
 
     results = []
@@ -128,16 +122,19 @@ def ensemble_predict(rf_model, xgb_model, sample, le, w_rf=0.4, w_xgb=0.6):
         results.append((crop, percent))
 
     best_crop = results[0]
-
     return best_crop, results
 
-#UI
+# ================== UI ==================
 st.set_page_config(page_title="Crop Recommendation", layout="centered")
 
-st.markdown("<h1>🌱 Crop Recommendation</h1>", unsafe_allow_html=True)
+st.markdown(
+    "<h1 style='font-size:40px;'>🌱 Crop Recommendation</h1>",
+    unsafe_allow_html=True
+)
+
 st.caption("เลือกค่าดิน")
 
-#INPUT
+# INPUT
 N = st.slider("Nitrogen (N)", 0, 140, 50)
 P = st.slider("Phosphorus (P)", 5, 145, 50)
 K = st.slider("Potassium (K)", 5, 205, 50)
@@ -156,7 +153,7 @@ user_input = {
     "rainfall": rainfall
 }
 
-#BUTTON
+# ================== BUTTON ==================
 if st.button("Predict"):
 
     valid, msg = validate_input(user_input)
@@ -167,9 +164,9 @@ if st.button("Predict"):
         sample = prepare_input(user_input)
         best_crop, top3 = ensemble_predict(rf_model, xgb_model, sample, le)
 
-        #RESULT
         st.markdown("<h2>แนะนำให้ปลูก</h2>", unsafe_allow_html=True)
 
+        # RESULT
         st.markdown(
             f"""
             <div class="result-box">
@@ -180,13 +177,13 @@ if st.button("Predict"):
             unsafe_allow_html=True
         )
 
-        #OTHER CHOICE
         st.markdown("<h3>Other choice</h3>", unsafe_allow_html=True)
 
+        # TOP 3
         for crop, percent in top3:
             st.markdown(
                 f"""
-                <div class="choice-box">
+                <div class="other-box">
                     <b>{crop}</b>
                     <span style="float:right;">{percent:.1f}%</span>
                 </div>
@@ -194,7 +191,7 @@ if st.button("Predict"):
                 unsafe_allow_html=True
             )
 
-        #CHART
+        # CHART
         df_chart = pd.DataFrame(top3, columns=["Crop", "Percent"])
         st.bar_chart(df_chart.set_index("Crop"))
 
