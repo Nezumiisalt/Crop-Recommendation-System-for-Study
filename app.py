@@ -13,7 +13,7 @@ import pandas as pd
 import numpy as np
 import joblib
 
-# ================== CSS ==================
+# -------------------- STYLE --------------------
 st.markdown("""
 <style>
 
@@ -22,69 +22,64 @@ h1 a, h2 a, h3 a, h4 a {
     display: none !important;
 }
 
-/* ===== LIGHT MODE ONLY ===== */
+/* ================= LIGHT MODE ================= */
 @media (prefers-color-scheme: light) {
 
-    /* พื้นหลังเว็บ */
-    body, .stApp {
+    /* พื้นหลัง */
+    .stApp {
         background-color: #f5f6e5;
     }
 
-    /* หัวข้อ */
+    /* title */
     h1 {
         color: #759b69 !important;
         font-family: 'Puimek', sans-serif;
     }
 
-    /* label + text */
-    label, .stMarkdown, .stText {
+    /* label input */
+    label, .stSlider label {
         color: #000000 !important;
     }
 
-    /* slider bar */
-    .stSlider > div > div {
-        color: #759b69 !important;
-    }
-
-    /* slider track */
-    .stSlider [data-baseweb="slider"] div {
+    /* slider */
+    .stSlider > div > div > div > div {
         background-color: #759b69 !important;
     }
 
-    /* RESULT BOX (แนะนำให้ปลูก) */
+    /* main result box */
     .result-box {
-        background-color: #b0c663;
-        color: #000000;
-        padding: 20px;
-        border-radius: 15px;
-        text-align: center;
+        background-color: #b0c663 !important;
+        color: #000000 !important;
     }
 
-    /* OTHER CHOICE BOX */
+    /* other choice */
     .other-box {
-        background-color: #759b69;
-        color: #ffffff;
-        padding: 10px;
-        margin: 5px;
-        border-radius: 10px;
+        background-color: #759b69 !important;
+        color: #ffffff !important;
     }
 
-    /* chart background */
-    .stPlotlyChart, .stBarChart {
+    /* กราฟ */
+    .stChart {
         background-color: #f5f6e5 !important;
     }
+
 }
+
+/* ================= DARK MODE ================= */
+/* ไม่ต้องไปยุ่ง ใช้ของเดิมมึงเลย */
 
 </style>
 """, unsafe_allow_html=True)
 
-# ================== LOAD MODEL ==================
+
+# -------------------- LOAD MODEL --------------------
 rf_model = joblib.load("rf_model.pkl")
 xgb_model = joblib.load("xgb_model.pkl")
 scaler = joblib.load("scaler.pkl")
 le = joblib.load("label_encoder.pkl")
 
-# ================== VALIDATION ==================
+
+# -------------------- VALIDATION --------------------
 def validate_input(data):
     rules = {
         "N": (0, 140),
@@ -102,17 +97,20 @@ def validate_input(data):
 
     return True, "OK"
 
-# ================== PREP ==================
+
+# -------------------- PREPARE INPUT --------------------
 def prepare_input(user_dict):
     df = pd.DataFrame([user_dict])
     return scaler.transform(df)
 
-# ================== ENSEMBLE ==================
+
+# -------------------- ENSEMBLE --------------------
 def ensemble_predict(rf_model, xgb_model, sample, le, w_rf=0.4, w_xgb=0.6):
     rf_probs = rf_model.predict_proba(sample)[0]
     xgb_probs = xgb_model.predict_proba(sample)[0]
 
     combined = (w_rf * rf_probs) + (w_xgb * xgb_probs)
+
     top3_idx = combined.argsort()[-3:][::-1]
 
     results = []
@@ -122,9 +120,11 @@ def ensemble_predict(rf_model, xgb_model, sample, le, w_rf=0.4, w_xgb=0.6):
         results.append((crop, percent))
 
     best_crop = results[0]
+
     return best_crop, results
 
-# ================== UI ==================
+
+# -------------------- UI --------------------
 st.set_page_config(page_title="Crop Recommendation", layout="centered")
 
 st.markdown(
@@ -153,7 +153,7 @@ user_input = {
     "rainfall": rainfall
 }
 
-# ================== BUTTON ==================
+# -------------------- BUTTON --------------------
 if st.button("Predict"):
 
     valid, msg = validate_input(user_input)
@@ -164,27 +164,34 @@ if st.button("Predict"):
         sample = prepare_input(user_input)
         best_crop, top3 = ensemble_predict(rf_model, xgb_model, sample, le)
 
-        st.markdown("<h2>แนะนำให้ปลูก</h2>", unsafe_allow_html=True)
+        # TITLE
+        st.markdown(
+            "<h2 style='font-size:32px;'>แนะนำให้ปลูก</h2>",
+            unsafe_allow_html=True
+        )
 
-        # RESULT
+        # RESULT BOX
         st.markdown(
             f"""
-            <div class="result-box">
-                <h1>{best_crop[0]}</h1>
+            <div class="result-box" style="padding:20px; border-radius:15px; text-align:center">
+                <h1 style="font-size:50px;">{best_crop[0]}</h1>
                 <h2>{best_crop[1]:.1f}%</h2>
             </div>
             """,
             unsafe_allow_html=True
         )
 
-        st.markdown("<h3>Other choice</h3>", unsafe_allow_html=True)
+        # OTHER
+        st.markdown(
+            "<h3 style='margin-top:25px;'>Other choice</h3>",
+            unsafe_allow_html=True
+        )
 
-        # TOP 3
         for crop, percent in top3:
             st.markdown(
                 f"""
-                <div class="other-box">
-                    <b>{crop}</b>
+                <div class="other-box" style="padding:10px; margin:5px; border-radius:10px">
+                    <b style="font-size:20px;">{crop}</b>
                     <span style="float:right;">{percent:.1f}%</span>
                 </div>
                 """,
