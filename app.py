@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 import joblib
 
-
+#STYLE
 st.markdown("""
 <style>
 h1 a, h2 a, h3 a, h4 a {
@@ -21,13 +21,25 @@ h1 a, h2 a, h3 a, h4 a {
 </style>
 """, unsafe_allow_html=True)
 
-# LOAD MODEL
+#CONFIG
+st.set_page_config(page_title="Crop Recommendation", layout="centered")
+
+#THEME DETECTION
+theme = st.get_option("theme.base")
+
+text_color = "#FFFFFF" if theme == "dark" else "#000000"
+sub_text_color = "#00ffcc" if theme == "dark" else "#007f66"
+card_bg = "#2c2c2c" if theme == "dark" else "#f5f5f5"
+main_bg = "#1f4037" if theme == "dark" else "#d9f2ec"
+main_text = "#FFFFFF" if theme == "dark" else "#000000"
+
+#LOAD MODEL
 rf_model = joblib.load("rf_model.pkl")
 xgb_model = joblib.load("xgb_model.pkl")
 scaler = joblib.load("scaler.pkl")
 le = joblib.load("label_encoder.pkl")
 
-# VALIDATION
+#VALIDATION
 def validate_input(data):
     rules = {
         "N": (0, 140),
@@ -45,12 +57,12 @@ def validate_input(data):
 
     return True, "OK"
 
-# PREPARE INPUT
+#PREPARE INPUT
 def prepare_input(user_dict):
     df = pd.DataFrame([user_dict])
     return scaler.transform(df)
 
-# ENSEMBLE
+#ENSEMBLE
 def ensemble_predict(rf_model, xgb_model, sample, le, w_rf=0.4, w_xgb=0.6):
     rf_probs = rf_model.predict_proba(sample)[0]
     xgb_probs = xgb_model.predict_proba(sample)[0]
@@ -69,17 +81,14 @@ def ensemble_predict(rf_model, xgb_model, sample, le, w_rf=0.4, w_xgb=0.6):
 
     return best_crop, results
 
-
-# UI
-st.set_page_config(page_title="Crop Recommendation", layout="centered")
-
+#UI
 st.markdown(
-    "<h1 style='font-size:40px;'>Crop Recommendation 🌱</h1>",
+    f"<h1 style='font-size:40px; color:{text_color};'>Crop Recommendation</h1>",
     unsafe_allow_html=True
 )
 st.caption("Adjust soil parameters")
 
-# INPUT
+#INPUT
 N = st.slider("Nitrogen (N)", 0, 140, 50)
 P = st.slider("Phosphorus (P)", 5, 145, 50)
 K = st.slider("Potassium (K)", 5, 205, 50)
@@ -98,46 +107,46 @@ user_input = {
     "rainfall": rainfall
 }
 
-# BUTTON
+#BUTTON
 if st.button("Predict"):
 
     valid, msg = validate_input(user_input)
 
     if not valid:
-        st.error(f"❌ {msg}")
+        st.error(f"{msg}")
     else:
         sample = prepare_input(user_input)
 
         best_crop, top3 = ensemble_predict(rf_model, xgb_model, sample, le)
 
-
+        #TITLE
         st.markdown(
-            """
+            f"""
             <div style="margin-top:20px; margin-bottom:10px;">
-                <h2 style="font-size:32px; font-weight:700;">
-                     recommend
+                <h2 style="font-size:32px; font-weight:700; color:{text_color};">
+                     Recommend
                 </h2>
             </div>
             """,
             unsafe_allow_html=True
         )
 
-        # MAIN RESULT
+        #MAIN RESULT
         st.markdown(
             f"""
-            <div style="padding:20px; border-radius:15px; background-color:#1f4037; text-align:center">
-                <h1 style="color:white; font-size:50px;">{best_crop[0]}</h1>
-                <h2 style="color:#00ffcc;">{best_crop[1]:.1f}%</h2>
+            <div style="padding:20px; border-radius:15px; background-color:{main_bg}; text-align:center">
+                <h1 style="color:{main_text}; font-size:50px;">{best_crop[0]}</h1>
+                <h2 style="color:{sub_text_color};">{best_crop[1]:.1f}%</h2>
             </div>
             """,
             unsafe_allow_html=True
         )
 
-        # TOP 3 TITLE
+        #TOP 3 TITLE
         st.markdown(
-            """
+            f"""
             <div style="margin-top:25px; margin-bottom:10px;">
-                <h3 style="font-size:24px; font-weight:600;">
+                <h3 style="font-size:24px; font-weight:600; color:{text_color};">
                      Other choice
                 </h3>
             </div>
@@ -145,19 +154,23 @@ if st.button("Predict"):
             unsafe_allow_html=True
         )
 
-        # TOP 3 LIST
+        #TOP 3 LIST
         for crop, percent in top3:
             st.markdown(
                 f"""
-                <div style="padding:10px; margin:5px; border-radius:10px; background-color:#2c2c2c">
+                <div style="padding:10px; margin:5px; border-radius:10px;
+                            background-color:{card_bg}; color:{text_color};
+                            box-shadow:0 2px 5px rgba(0,0,0,0.1);">
                     <b style="font-size:20px;">{crop}</b>
-                    <span style="float:right; font-size:18px;">{percent:.1f}%</span>
+                    <span style="float:right; font-size:18px; color:{sub_text_color};">
+                        {percent:.1f}%
+                    </span>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
-        # CHART
+        #CHART
         df_chart = pd.DataFrame(top3, columns=["Crop", "Percent"])
         st.bar_chart(df_chart.set_index("Crop"))
 
